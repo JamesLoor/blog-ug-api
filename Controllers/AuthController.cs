@@ -1,6 +1,5 @@
 ﻿using blog_ug_api.Models;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace blog_ug_api.Controllers
 {
