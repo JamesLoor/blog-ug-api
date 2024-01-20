@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using blog_ug_api.Models;
 
@@ -10,9 +11,11 @@ using blog_ug_api.Models;
 namespace blog_ug_api.Migrations
 {
     [DbContext(typeof(RailwayContext))]
-    partial class RailwayContextModelSnapshot : ModelSnapshot
+    [Migration("20240120205727_UpdatePost")]
+    partial class UpdatePost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
