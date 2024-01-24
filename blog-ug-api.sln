@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 25.0.1704.2
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blog-ug-api", "blog-ug-api.csproj", "{078BCCBD-1055-42F6-B465-D801F3BA7538}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "blog-ug-api", "blog-ug-api.csproj", "{078BCCBD-1055-42F6-B465-D801F3BA7538}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
