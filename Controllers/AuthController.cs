@@ -8,12 +8,10 @@ namespace blog_ug_api.Controllers
     [Route("api/[controller]")]
     public class AuthController: ControllerBase
     {
-        //private readonly IConfiguration _configuration;
         private readonly RailwayContext _context;
 
         public AuthController(RailwayContext context)
         {
-            //_configuration = configuration;
             _context = context;
         }
 
@@ -50,15 +48,31 @@ namespace blog_ug_api.Controllers
         {
             try
             {
-                User newUser = new User();
-                newUser.Nombre = user.Name;
-                newUser.Email = user.Email;
-                newUser.Contrasena = user.Password;
-                //mascota.FechaCreacion = DateTime.Now;
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == user.Email);
+
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("Email", "El correo electrónico ya está registrado.");
+                    return BadRequest(ModelState);
+                }
+
+                var newUser = new User
+                {
+                    Nombre = user.Name,
+                    Email = user.Email,
+                    Contrasena = user.Password,
+                };
+
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync();
-                return Ok(new { message = "Registro exitoso" });
 
+                return Ok(new { Message = "Registro exitoso" });
             }
             catch (Exception ex)
             {
