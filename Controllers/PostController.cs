@@ -62,8 +62,24 @@ namespace blog_ug_api.Controllers
 
         [HttpPost]
         [Authorize]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> CreatePost([FromBody] Post post)
         {
+            if (post == null)
+            {
+                return BadRequest("El post no puede ser nulo.");
+            }
+
+            try
+            {
+                _context.Posts.Add(post);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("Get", new { id = post.Id }, post);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
