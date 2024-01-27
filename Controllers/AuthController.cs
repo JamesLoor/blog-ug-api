@@ -39,7 +39,6 @@ namespace blog_ug_api.Controllers
                     return Unauthorized(new { Message = "Credenciales inválidas" });
                 }
 
-                //retornar token jwt
                 var token = GenerateJwtToken(existingUser);
 
                 return Ok(new { Message = "Autenticación exitosa", Token = token });
