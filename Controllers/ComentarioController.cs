@@ -9,26 +9,30 @@ namespace blog_ug_api.Controllers
     public class ComentarioController : ControllerBase
     {
         private readonly RailwayContext _context;
-        Comentario _comentario;
-        public ComentarioController(RailwayContext context)
+        private readonly Comentario _comentario;
+
+        public ComentarioController(RailwayContext _context, Comentario _comentario)
         {
-            RailwayContext _context = context;
+             this._context = _context;
+            this._comentario = _comentario;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id)
+        public async Task<ActionResult<Comentario>> Get(int id)
         {
+
             try
             {  
             var comment = await _context.Comments.FindAsync(id);
                 if(comment != null)
                 {
-                    return Ok(comment);
+                    _comentario.Id = comment.Id;
+                    await _context.SaveChangesAsync();
+                    return Ok(_comentario);
                 }else
                 {
                     return NoContent();
                 }
-           
             }
             catch (Exception ex)
             {
@@ -38,12 +42,13 @@ namespace blog_ug_api.Controllers
         }
 
         [HttpPost("comment")]
-        public async Task<ActionResult> Post(Comentario _comentario)
+        public async Task<ActionResult<Comentario>> Post(Comentario comentario)
         {
             try
             {
-                var comments = await _context.Comments.AddAsync(_comentario);
-                return CreatedAtAction("Get", new { id = _comentario.Id }, _comentario);
+                    var comment = await _context.Comments.AddAsync(comentario);
+                    return CreatedAtAction("Get", new { comentario.Id }, comentario);
+                
             }
             catch (Exception ex)
             {
@@ -52,7 +57,7 @@ namespace blog_ug_api.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult> Update(Comentario comentario)
+        public async Task<ActionResult<Comentario>> Update(Comentario comentario)
         {
             try
             {
