@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using blog_ug_api.Models;
 
@@ -10,9 +11,11 @@ using blog_ug_api.Models;
 namespace blog_ug_api.Migrations
 {
     [DbContext(typeof(RailwayContext))]
-    partial class RailwayContextModelSnapshot : ModelSnapshot
+    [Migration("20240127070152_UpdateModels")]
+    partial class UpdateModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,12 +105,15 @@ namespace blog_ug_api.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsuarioId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
@@ -177,13 +183,9 @@ namespace blog_ug_api.Migrations
 
             modelBuilder.Entity("blog_ug_api.Models.Post", b =>
                 {
-                    b.HasOne("blog_ug_api.Models.User", "Usuario")
+                    b.HasOne("blog_ug_api.Models.User", null)
                         .WithMany("Posts")
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("blog_ug_api.Models.Post", b =>
