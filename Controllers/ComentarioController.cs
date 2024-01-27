@@ -26,12 +26,12 @@ namespace blog_ug_api.Controllers
             var comment = await _context.Comments.FindAsync(id);
                 if(comment != null)
                 {
-                    _comentario.Id = comment.Id;
-                    await _context.SaveChangesAsync();
-                    return Ok(_comentario);
-                }else
+                    return Ok(comment);
+                }
+                else
                 {
-                    return NoContent();
+                    return NotFound();
+                    
                 }
             }
             catch (Exception ex)
@@ -42,7 +42,7 @@ namespace blog_ug_api.Controllers
         }
 
         [HttpPost("comment")]
-        public async Task<ActionResult<Comentario>> Post(Comentario comentario)
+        public async Task<ActionResult<Comentario>> Post([FromBody]Comentario comentario)
         {
             try
             {
@@ -57,11 +57,11 @@ namespace blog_ug_api.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult<Comentario>> Update(Comentario comentario)
+        public async Task<ActionResult<Comentario>> Update([FromBody]Comentario comentario)
         {
             try
             {
-                if (_comentario.PostId != 0)
+                if (_comentario.Post != null)
                 {
                     _comentario.Contenido = comentario.Contenido;
                     await _context.SaveChangesAsync();

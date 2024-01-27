@@ -12,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<RailwayContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("connection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.3.0-mysql")));
+builder.Services.AddScoped<Comentario>();
 
 var app = builder.Build();
 
