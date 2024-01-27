@@ -1,4 +1,5 @@
 ﻿using blog_ug_api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,16 +61,19 @@ namespace blog_ug_api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public void Post([FromBody] string value)
         {
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public void Put(int id, [FromBody] string value)
         {
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public void Delete(int id)
         {
         }
