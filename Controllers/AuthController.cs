@@ -5,6 +5,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.Mail;
+using System.Net;
 
 namespace blog_ug_api.Controllers
 {
@@ -114,6 +116,84 @@ namespace blog_ug_api.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                if (user == null)
+                {
+                    return NotFound(new { Message = "No se encontró el usuario con este correo electrónico." });
+                }
+
+
+                EnviarCorreo(user.Email);
+
+                return Ok(new { Message = "Se ha enviado un correo con el enlace para restablecer la contraseña." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("complete-reset")]
+        public async Task<IActionResult> CompleteReset([FromBody] CompleteResetPasswordModel model)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == model.Email);
+
+                if (existingUser == null)
+                {
+                    return NotFound(new { Message = "Token inválido" });
+                }
+
+                existingUser.Contrasena = model.NewPassword;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { Message = "Contraseña restablecida exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private void EnviarCorreo(string email)
+        {
+            MailAddress addressFrom = new MailAddress("blog.ug.proyecto@gmail.com", "Blog UG");
+            MailAddress addressTo = new MailAddress(email);
+            MailMessage message = new MailMessage(addressFrom, addressTo);
+
+            message.IsBodyHtml = true;
+            message.Body = GenerarCodigoAleatorio();
+            message.Subject = "Recuperación de contraseña";
+
+            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
+            smtpClient.EnableSsl = true;
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Credentials = new NetworkCredential("blog.ug.proyecto@gmail.com", "cvrg mkar sphm wegy");
+
+
+            smtpClient.Send(message);
+        }
+        private string GenerarCodigoAleatorio()
+        {
+            var random = new Random();
+            var codigo = "";
+
+            for (int i = 0; i < 6; i++)
+            {
+                codigo += random.Next(0, 10).ToString();
+            }
+
+            return codigo;
         }
     }
 }
