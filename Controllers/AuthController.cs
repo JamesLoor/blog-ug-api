@@ -129,7 +129,6 @@ namespace blog_ug_api.Controllers
                     return NotFound(new { Message = "No se encontró el usuario con este correo electrónico." });
                 }
 
-
                 EnviarCorreo(user.Email);
 
                 return Ok(new { Message = "Se ha enviado un correo con el enlace para restablecer la contraseña." });

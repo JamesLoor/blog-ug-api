@@ -14,6 +14,6 @@ namespace blog_ug_api.Models
         public int UsuarioId { get; set; }
         public User Usuario { get; set; }
         public List<Comentario>? Comentarios { get; set; }
-        public List<Categoria> Categorias { get; set; }
+        public string? Categoria { get; set; }
     }
 }
