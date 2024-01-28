@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using blog_ug_api.Models;
 
@@ -10,9 +11,11 @@ using blog_ug_api.Models;
 namespace blog_ug_api.Migrations
 {
     [DbContext(typeof(RailwayContext))]
-    partial class RailwayContextModelSnapshot : ModelSnapshot
+    [Migration("20240128025854_UpdatePostCategoriesToCategory")]
+    partial class UpdatePostCategoriesToCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace blog_ug_api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.HasCharSet(modelBuilder, "utf8mb4");
+
+            modelBuilder.Entity("blog_ug_api.Models.Categoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
 
             modelBuilder.Entity("blog_ug_api.Models.Comentario", b =>
                 {
@@ -56,6 +74,9 @@ namespace blog_ug_api.Migrations
                     b.Property<string>("Categoria")
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("CategoriaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Contenido")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -79,6 +100,8 @@ namespace blog_ug_api.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoriaId");
 
                     b.HasIndex("UsuarioId");
 
@@ -135,6 +158,10 @@ namespace blog_ug_api.Migrations
 
             modelBuilder.Entity("blog_ug_api.Models.Post", b =>
                 {
+                    b.HasOne("blog_ug_api.Models.Categoria", null)
+                        .WithMany("Posts")
+                        .HasForeignKey("CategoriaId");
+
                     b.HasOne("blog_ug_api.Models.User", "Usuario")
                         .WithMany("Posts")
                         .HasForeignKey("UsuarioId")
@@ -142,6 +169,11 @@ namespace blog_ug_api.Migrations
                         .IsRequired();
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("blog_ug_api.Models.Categoria", b =>
+                {
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("blog_ug_api.Models.Post", b =>

@@ -37,15 +37,10 @@ namespace blog_ug_api.Controllers
                             p.Usuario.Nombre,
                             p.Usuario.Email
                         },
-                        p.Categorias,
+                        p.Categoria,
                         p.FechaPublicacion
                     })
                     .ToListAsync();
-
-                if (posts == null || !posts.Any())
-                {
-                    return NotFound(new { Message = "No se encontraron blogs" });
-                }
 
                 return Ok(posts);
             }
@@ -54,6 +49,48 @@ namespace blog_ug_api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("by-user")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<Post>>> GetByUser()
+        {
+            try
+            {
+                string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized(new { Message = "Usuario no autenticado" });
+                }
+
+                var posts = await _context.Posts
+                    .Where(p => p.UsuarioId == int.Parse(userId))
+                    .Select(p => new
+                    {
+                        p.Id,
+                        p.Imagen,
+                        p.Titulo,
+                        p.Descripcion,
+                        p.Contenido,
+                        p.Comentarios,
+                        Usuario = new
+                        {
+                            p.Usuario.Id,
+                            p.Usuario.Nombre,
+                            p.Usuario.Email
+                        },
+                        p.Categoria,
+                        p.FechaPublicacion
+                    })
+                    .ToListAsync();
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetById(int id)
@@ -75,7 +112,7 @@ namespace blog_ug_api.Controllers
                             p.Usuario.Nombre,
                             p.Usuario.Email
                         },
-                        p.Categorias
+                        p.Categoria
                     })
                     .FirstOrDefaultAsync(p => p.Id == id);
 
@@ -99,23 +136,25 @@ namespace blog_ug_api.Controllers
             try
             {
                 string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId != null)
-                {
-                    var newPost = new Post
-                    {
-                        Titulo = post.Titulo,
-                        Categorias = post.Categorias,
-                        Contenido = post.Contenido,
-                        Descripcion = post.Descripcion,
-                        UsuarioId = int.Parse(userId),
-                        Imagen = post.Imagen,
-                    };
 
-                    _context.Posts.Add(newPost);
-                    await _context.SaveChangesAsync();
-                    return Ok("Post creado con éxito");
+                if (userId == null)
+                {
+                    return Unauthorized("Operación no autorizada");
                 }
-                return Unauthorized("Usuario no autenticado");
+
+                var newPost = new Post
+                {
+                    Titulo = post.Titulo,
+                    Categoria = post.Categoria,
+                    Contenido = post.Contenido,
+                    Descripcion = post.Descripcion,
+                    UsuarioId = int.Parse(userId),
+                    Imagen = post.Imagen,
+                };
+
+                _context.Posts.Add(newPost);
+                await _context.SaveChangesAsync();
+                return Ok(new { Message = "Post creado con éxito" });
             }
             catch (Exception ex)
             {
@@ -133,24 +172,25 @@ namespace blog_ug_api.Controllers
 
                 if (existingPost == null)
                 {
-                    return NotFound("Post no encontrado");  
+                    return NotFound(new { Message = "Post no encontrado" });
                 }
 
                 string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId == null || existingPost.UsuarioId != int.Parse(userId))
                 {
-                    return Unauthorized("Operación no autorizada");
+                    return Unauthorized(new { Message = "Operación no autorizada" });
                 }
 
                 existingPost.Titulo = post.Titulo;
                 existingPost.Descripcion = post.Descripcion;
                 existingPost.Contenido = post.Contenido;
                 existingPost.Imagen = post.Imagen;
-                existingPost.Categorias = post.Categorias;
+                existingPost.Categoria = post.Categoria;
 
                 await _context.SaveChangesAsync();
 
-                return Ok("Post actualizado con éxito");
+                return Ok(new { Message = "Post actualizado con éxito" });
+                
             }   
             catch (Exception ex)
             {
@@ -168,19 +208,19 @@ namespace blog_ug_api.Controllers
 
                 if (post == null)
                 {
-                    return NotFound("Post no encontrado");
+                    return NotFound(new { Message = "Post no encontrado" });
                 }
 
                 string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId == null || post.UsuarioId != int.Parse(userId))
                 {
-                    return Unauthorized("Operación no autorizada");
+                    return Unauthorized(new { Message = "Operación no autorizada" });
                 }
 
                 _context.Posts.Remove(post);
                 await _context.SaveChangesAsync();
 
-                return Ok("Post eliminado con éxito");
+                return Ok(new { Message = "Post eliminado con éxito" });
             }
             catch (Exception ex)
             {

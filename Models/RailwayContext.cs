@@ -17,14 +17,12 @@ public partial class RailwayContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Post> Posts { get; set; }
-    public DbSet<Categoria> Categories { get; set; }
     public DbSet<Comentario> Comments { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured) { }
     }
-        
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
