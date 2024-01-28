@@ -22,17 +22,18 @@ namespace blog_ug_api.Controllers
         {
 
             try
-            {  
-            var comment = await _context.Comments.FindAsync(id);
-                if(comment != null)
+            {
+                var comment = await _context.Comments.FindAsync(id);
+                if (comment != null)
                 {
                     return Ok(comment);
                 }
                 else
                 {
                     return NotFound();
-                    
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -41,14 +42,22 @@ namespace blog_ug_api.Controllers
 
         }
 
+
         [HttpPost("comment")]
         public async Task<ActionResult<Comentario>> Post([FromBody]Comentario comentario)
         {
             try
             {
-                    var comment = await _context.Comments.AddAsync(comentario);
+                if(comentario != null) { 
+              var comment = await _context.Comments.AddAsync(comentario);
+              
                     return CreatedAtAction("Get", new { comentario.Id }, comentario);
                 
+                }else
+                {
+                    return NoContent();
+                }
+
             }
             catch (Exception ex)
             {
